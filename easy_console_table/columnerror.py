@@ -1,0 +1,2 @@
+class ColumnError(Exception):
+    pass
