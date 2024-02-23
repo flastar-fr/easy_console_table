@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 
-with open("app/README.md", "r") as f:
+with open("easy_console_table/README.md", "r") as f:
     long_description = f.read()
 
 setup(
@@ -17,7 +17,7 @@ setup(
     license="MIT",
     classifiers=[
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.7",
         "Operating System :: OS Independent",
     ],
     extras_require={
