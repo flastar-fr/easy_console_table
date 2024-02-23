@@ -1,12 +1,36 @@
 from columnerror import ColumnError
 
 
+alignment = {"left": "<", "center": "^", "right": ">"}
+
+
 class Table:
     """ Class to create a table with name as key and list as values
         :atr table: dict -> contains all the datas
+        :atr options: dict -> contains all the customizable options
     """
     def __init__(self):
         self.table = {}
+        self.options = {"alignment": alignment["right"],
+                        "title_separator": "-",
+                        "column_separator": "|",
+                        "line_separator": "_"}
+
+    def config(self, **kwargs):
+        # assertion tests
+        for key in kwargs.keys():
+            assert key in self.options.keys(), (f"Invalid {key} argument, argument should be in : "
+                                                f"{", ".join(self.options.keys())}")
+        if "alignment" in kwargs.keys():
+            assert kwargs["alignment"] in alignment.keys(), (f"Invalid alignment {kwargs["alignment"]} argument,"
+                                                             f" it should be in : {", ".join(alignment.keys())}")
+
+        # config
+        for key in kwargs.keys():
+            if key != "alignment":
+                self.options[key] = kwargs[key]
+            else:
+                self.options[key] = alignment[kwargs[key]]
 
     def add_column(self, name: str, datas: list):
         """ Method to create a column to the table
@@ -73,27 +97,32 @@ class Table:
             return ""
 
         keys = list(self.table.keys())
+        align = self.options["alignment"]
+        title_separator = self.options["title_separator"]
+        column_separator = self.options["column_separator"]
+        line_separator = self.options["line_separator"]
 
         # titles display
         max_digit_value = self._get_max_lenght_value()
-        title_separator_line = ("-" * (max_digit_value + 7)) * len(self.table.keys())
-        to_return = [title_separator_line, "|", title_separator_line]
+        title_separator_line = (title_separator * (max_digit_value + 7)) * len(self.table.keys())
+        to_return = [title_separator_line, column_separator, title_separator_line]
         for key in keys:
-            to_return[1] += f" {key: ^{max_digit_value+3}} |"
+            to_return[1] += f" {key: ^{max_digit_value+3}} {column_separator}"
 
         # values display
         longest_column = self._get_longest_column()
         for i in range(longest_column):
-            to_return.append("|")
+            to_return.append(column_separator)
             for key in keys:
                 if len(self.table[key]) - 1 >= i:   # existing value
                     value = self.table[key][i]
                 else:   # non-existing value
                     value = ""
-                to_return[-1] += f" {value: >{max_digit_value+3}} |"
+                to_return[-1] += f" {value: {align}{max_digit_value+3}} {column_separator}"
 
             # line separator
-            line = f"| {"-" * (max_digit_value+3)} " * len(keys) + "|"
+            line = (f"{column_separator} {line_separator * (max_digit_value+3)} " *
+                    len(keys) + column_separator)
             to_return.append(line)
 
         return "\n".join(to_return)
