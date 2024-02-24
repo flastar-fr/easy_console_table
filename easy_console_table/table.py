@@ -7,6 +7,7 @@ class Table:
     """ Class to create a table with name as key and list as values
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options
+        :atr filter: list -> contains the column's name to not show
     """
 
     def __init__(self, **kwargs):
@@ -59,6 +60,17 @@ class Table:
             :return: dict -> the whole table
         """
         return self.table
+
+    def set_column(self, name: str, values: list):
+        """ Method to set a column value
+            :param name: str -> column name to set
+            :param values: list -> value to set to column
+        """
+        if name not in self.table.keys():
+            raise ColumnError("Column's name not in table")
+        if not isinstance(values, list):
+            raise ColumnError("Column must be a list type")
+        self.table[name] = values
 
     def get_column(self, name: str) -> list:
         """ Method to get the column list with the name
@@ -116,6 +128,24 @@ class Table:
         for key, value in self.table.items():
             self.table[key] = [x for _, x in sorted(zip(from_column, value))]
 
+    def export_as_csv(self, file_name: str):
+        """ Method to export into a CSV file with filter
+            :param file_name: str -> file name to use
+        """
+        keys = [key for key in self.table.keys() if key not in self.filter]
+        longest_column = self._get_longest_column()
+        with open(f"{file_name}", "w") as f:
+            f.write(",".join(keys) + "\n")  # titles
+            # values
+            for i in range(longest_column):
+                values = []
+                for key in keys:
+                    if len(self.table[key]) - 1 >= i:  # existing value
+                        values.append(str(self.table[key][i]))
+                    else:  # non-existing value
+                        values.append("")
+                f.write(",".join(values) + "\n")
+
     def _get_max_lenght_value(self) -> int:
         """ Private method to get the max lenght value to get the right to format to display
             :return: int -> max lenght value
@@ -156,7 +186,9 @@ class Table:
         # titles display
         max_digit_value = self._get_max_lenght_value()
         # draw a column * amount of column (don't take last char)
-        title_separator_line = ((title_separator * (max_digit_value + 7)) * len(keys))[:-1]
+        title_separator_line = ((title_separator * (max_digit_value + 7)) * len(keys))
+        if len(keys) > 1:
+            title_separator_line = title_separator_line[:-len(keys)+1]
         to_return = [title_separator_line, column_separator, title_separator_line]
         for key in keys:
             to_return[1] += f" {key: ^{max_digit_value + 3}} {column_separator}"
