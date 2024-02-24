@@ -53,6 +53,8 @@ class Table:
         """
         if name not in self.table.keys():
             raise ColumnError("Column's name not in table")
+        if name in self.filter:
+            self.remove_filter(name)
         self.table.pop(name)
 
     def get_table(self) -> dict:
@@ -134,7 +136,7 @@ class Table:
         """
         keys = [key for key in self.table.keys() if key not in self.filter]
         longest_column = self._get_longest_column()
-        with open(f"{file_name}", "w") as f:
+        with open(f"{file_name}.csv", "w") as f:
             f.write(",".join(keys) + "\n")  # titles
             # values
             for i in range(longest_column):
