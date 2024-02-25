@@ -6,8 +6,8 @@ with open("README.md", "r") as f:
 
 setup(
     name="easy-console-table",
-    version="0.0.1",
-    description="A simple package to create a console table",
+    version="0.0.2",
+    description="A simple package to create a table in console",
     packages=find_packages(),
     long_description=long_description,
     long_description_content_type="text/markdown",
