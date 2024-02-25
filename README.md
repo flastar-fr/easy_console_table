@@ -46,7 +46,7 @@ Add : method ``add_column`` that takes as parameters a column's name and a list 
 Delete : methods ``Delete_column`` that takes as parameter a column's name in the table. If a column is delete, it gets removed in the filter.
 
 #### Set and Get a column
-Set : method ``set_column`` that takes as parameters a column's name and list of values.
+Set : method ``set_column`` that takes as parameters a column's name and a list of values.
 
 Get : method ``get_column`` that takes as parameter a column's name and return a list of values.
 
@@ -56,7 +56,7 @@ You can get the whole table implemented using dict of list by using method ``get
 #### Perfect table
 A perfect table is like a perfect graph. It's a table where all the columns have the same lenght.
 
-Use the method ``get_is_perfect`` that returns a boolean to know if the table is perfect or not.
+Use the method ``get_is_perfect`` that returns a boolean to know if the table is perfect (True) or not (False).
 
 #### Filter system
 An attribute of ``Table`` is a ``filter``. It is a list that contains all the column's names that you don't want to show.
@@ -69,10 +69,10 @@ Remove : method ``remove_filter`` makes you remove an element of the filter, rem
 Clear : method ``clear_filter`` clear the whole filter.
 
 #### Sort table
-You can sort the whole table by following a column sorting. You can use it with the method ``sort_table_from_column`` that takes a column's name as parameter. Table must be perfect to sort.
+You can sort the whole table by following a column sorting. You can use it with the method ``sort_table_from_column`` that takes a column's name as parameter. Table have to be perfect to sort.
 
 #### Export to CSV
-You can export the table to a CSV by using ``export_as_csv`` method that takes as parameter the file path or name. Columns filtered will not be exported.
+You can export the table to a CSV file by using ``export_as_csv`` method that takes as parameter the file path or name. Columns filtered will not be exported.
 
 ### Mixed example
 Code :
