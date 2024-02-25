@@ -36,6 +36,8 @@ You need to create an object of ``Table`` that uses ``**kwargs`` parameters so y
 
 Here's all you can configure : ``alignment=str, title_separator=str, column_separator=str, line_separator=str``.
 
+Base settings are : ``"alignment": "right", "title_separator": "-", "column_separator": "|", "line_separator": "_"``
+
 Even after creating the table you can configure it by using the method ``config`` which takes the same arguments.
 
 #### Add and Delete a column

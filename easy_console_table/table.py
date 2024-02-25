@@ -1,4 +1,4 @@
-from columnerror import ColumnError
+from easy_console_table.columnerror import ColumnError
 
 alignment = {"left": "<", "center": "^", "right": ">"}
 
