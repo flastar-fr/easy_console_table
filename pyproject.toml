@@ -1,6 +1,6 @@
 [project]
 name = "easy-console-table"
-version = "0.0.8"
+version = "0.0.9"
 authors = [{name="flastar"}, ]
 description = "A simple package to easily create a table in console."
 readme = "README.md"
@@ -15,5 +15,5 @@ license = {file="LICENSE"}
 [project.urls]
 "Homepage" = "https://github.com/flastar-fr/easy_console_table"
 [build-system]
-requires = ["setuptools == 69.1.1"]
+requires = ["setuptools <= 69.1.1"]
 build-backend = "setuptools.build_meta"

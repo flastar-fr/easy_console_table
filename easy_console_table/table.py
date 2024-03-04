@@ -28,11 +28,11 @@ class Table:
         for key in kwargs.keys():
             if key not in self.options.keys():
                 raise ColumnError(f"Invalid {key} argument, argument should be in : "
-                                  f"{", ".join(self.options.keys())}")
+                                  f"{', '.join(self.options.keys())}")
         if "alignment" in kwargs.keys():
             if kwargs["alignment"] not in alignment.keys():
-                raise ColumnError(f"Invalid alignment {kwargs["alignment"]} argument,"
-                                  f" it should be in : {", ".join(alignment.keys())}")
+                raise ColumnError(f"Invalid alignment {kwargs['alignmen']} argument,"
+                                  f" it should be in : {', '.join(alignment.keys())}")
 
         # config
         for key, value in kwargs.items():
@@ -148,21 +148,14 @@ class Table:
                         values.append("")
                 f.write(",".join(values) + "\n")
 
-    def _get_max_lenght_value(self) -> int:
+    def _get_max_lenght_value(self, column_name: str) -> int:
         """ Private method to get the max lenght value to get the right to format to display
             :return: int -> max lenght value
         """
-        max_value = 0
+        max_value = len(column_name)
         # table values
-        for val in self.table.values():
-            m_values = sorted([len(str(value)) for value in val])
-            if m_values[0] > max_value:
-                max_value = m_values[0]
-
-        # table keys
-        for key in self.table.keys():
-            if len(key) > max_value:
-                max_value = len(key)
+        if len(str(max(self.table[column_name], key=lambda x: len(str(x))))) > max_value:
+            max_value = len(str(max(self.table[column_name], key=lambda x: len(str(x)))))
 
         return max_value + 1  # +1 to have a better result
 
@@ -186,19 +179,22 @@ class Table:
         line_separator: str = self.options["line_separator"]
 
         # titles display
-        max_digit_value = self._get_max_lenght_value()
         # draw a column * amount of column (don't take last char)
-        title_separator_line = ((title_separator * (max_digit_value + 7)) * len(keys))
-        if len(keys) > 1:
-            title_separator_line = title_separator_line[:-len(keys)+1]
-        to_return = [title_separator_line, column_separator, title_separator_line]
+        title_separator_line = ""
+        middle_list = column_separator
+        separator_values_lines = column_separator
         for key in keys:
-            to_return[1] += f" {key: ^{max_digit_value + 3}} {column_separator}"
+            max_digit_value = self._get_max_lenght_value(key)
+            title_separator_line += (title_separator * (max_digit_value + 7))
+            middle_list += f" {key: ^{max_digit_value + 3}} {column_separator}"
+            separator_values_lines += (f" {line_separator * (max_digit_value + 3)} "
+                                       + column_separator)
+        if len(keys) > 1:
+            title_separator_line = title_separator_line[:-len(keys) + 1]
+        to_return: list[str] = [title_separator_line, middle_list, title_separator_line]
 
         # values display
         # (column separator + draw a column) * amount of column + column separator
-        separator_values_lines = (f"{column_separator} {line_separator * (max_digit_value + 3)} " *
-                                  len(keys) + column_separator)
         longest_column = self._get_longest_column()
         for i in range(longest_column):
             to_return.append(column_separator)
@@ -207,6 +203,7 @@ class Table:
                     value = self.table[key][i]
                 else:  # non-existing value
                     value = ""
+                max_digit_value = self._get_max_lenght_value(key)
                 to_return[-1] += f" {value: {align}{max_digit_value + 3}} {column_separator}"
 
             # line separator
