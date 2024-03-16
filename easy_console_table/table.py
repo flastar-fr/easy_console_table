@@ -212,6 +212,7 @@ class Table:
         """
         assert self._search_value_in_columns_index(index, "\n"), "Method must be used for multi-line purposes"
 
+        # get datas
         splitted_lines = []
         for column in self.table.values():
             if len(column) - 1 >= index:
@@ -222,11 +223,13 @@ class Table:
             else:
                 splitted_lines.append([])
 
+        # uniformize datas
         max_line = len(max(splitted_lines, key=lambda x: len(x)))
         for column in splitted_lines:
             while len(column) != max_line:
                 column.append("")
 
+        # draw line
         lines: list[str] = ["" for _ in range(max_line)]
 
         for i in range(len(splitted_lines)):
