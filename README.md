@@ -17,11 +17,11 @@ A package to easily create a console table that can render this :
 
 ### Introduction code
 Code to make the introduction table :
+
 ```py
-from easy_console_table import Table
+from easy_console_table import TableVertical
 
-
-t = Table()
+t = TableVertical()
 t.add_column("Hello", ["Hello", "World"])
 t.add_column("World", [1, 2, 3])
 print(t)
@@ -76,11 +76,11 @@ You can export the table to a CSV file by using ``export_as_csv`` method that ta
 
 ### Mixed example
 Code :
+
 ```py
-from easy_console_table import Table
+from easy_console_table import TableVertical
 
-
-t = Table(alignment="center", title_separator="#", line_separator="-", column_separator="I")
+t = TableVertical(alignment="center", title_separator="#", line_separator="-", column_separator="I")
 t.add_column("Hello", ["World", "!", "Hello"])
 t.add_column("Sort", [2, 3, 1])
 t.add_column("trash", ["Dont", "Work", "As", "It", "Should"])
