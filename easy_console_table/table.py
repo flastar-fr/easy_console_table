@@ -153,9 +153,11 @@ class Table:
             :return: int -> max lenght value
         """
         max_value = len(column_name)
-        # table values
-        if len(str(max(self.table[column_name], key=lambda x: len(str(x))))) > max_value:
-            max_value = len(str(max(self.table[column_name], key=lambda x: len(str(x)))))
+        for val in self.table[column_name]:
+            lines = val.split('\n')
+            max_line_length = max(len(line) for line in lines)
+            if max_line_length > max_value:
+                max_value = max_line_length
 
         return max_value + 1  # +1 to have a better result
 
@@ -164,6 +166,77 @@ class Table:
             :return: int -> longest column lenght
         """
         return len(max(self.table.values(), key=lambda x: len(x)))
+
+    def _search_value_in_columns_index(self, index: int, value: str) -> bool:
+        """ Private method to search a value in all columns at a specific index
+            :param index: int -> index to search on
+            :param value: str -> value to search
+
+            :return: bool -> True if value in, otherwise False
+        """
+        for column in self.table.values():
+            if len(column) - 1 >= index:
+                if value in column[index]:
+                    return True
+        return False
+
+    def draw_line_single(self, index: int, keys: list[str], column_separator: str, align: str) -> str:
+        """ Private method to draw a full line on a single line
+            :param index: int -> line to draw
+            :param keys: list[str] -> all the keys
+            :param column_separator: str -> character use to separate columns
+            :param align: str -> character use to align (<, ^, >)
+
+            :return: str -> the full line
+        """
+        line = ""
+
+        for key in keys:
+            if len(self.table[key]) - 1 >= index:  # existing value
+                value = self.table[key][index]
+            else:  # non-existing value
+                value = ""
+            max_digit_value = self._get_max_lenght_value(key)
+            line += f" {value: {align}{max_digit_value + 3}} {column_separator}"
+
+        return line
+
+    def draw_multiline(self, index: int, keys: list[str], column_separator: str, align: str) -> list[str]:
+        """ Private method to draw a multi-line line
+            :param index: int -> line to draw
+            :param keys: list[str] -> all the keys
+            :param column_separator: str -> character use to separate columns
+            :param align: str -> character use to align (<, ^, >)
+
+            :return: str -> multi-lines
+        """
+        assert self._search_value_in_columns_index(index, "\n"), "Method must be used for multi-line purposes"
+
+        splitted_lines = []
+        for column in self.table.values():
+            if len(column) - 1 >= index:
+                if "\n" in column[index]:
+                    splitted_lines.append(column[index].split("\n"))
+                else:
+                    splitted_lines.append([column[index]])
+            else:
+                splitted_lines.append([])
+
+        max_line = len(max(splitted_lines, key=lambda x: len(x)))
+        for column in splitted_lines:
+            while len(column) != max_line:
+                column.append("")
+
+        lines: list[str] = ["" for _ in range(max_line)]
+
+        for i in range(len(splitted_lines)):
+            max_digit_value = self._get_max_lenght_value(keys[i])
+
+            for j in range(len(splitted_lines[0])):
+                value = splitted_lines[i][j]
+                lines[j] += f" {value: {align}{max_digit_value + 3}} {column_separator}"
+
+        return lines
 
     def __str__(self) -> str:
         """ Special method to get the str format of the table
@@ -197,14 +270,15 @@ class Table:
         # (column separator + draw a column) * amount of column + column separator
         longest_column = self._get_longest_column()
         for i in range(longest_column):
-            to_return.append(column_separator)
-            for key in keys:
-                if len(self.table[key]) - 1 >= i:  # existing value
-                    value = self.table[key][i]
-                else:  # non-existing value
-                    value = ""
-                max_digit_value = self._get_max_lenght_value(key)
-                to_return[-1] += f" {value: {align}{max_digit_value + 3}} {column_separator}"
+            # multi-line
+            if self._search_value_in_columns_index(i, "\n"):
+                lines = self.draw_multiline(i, keys, column_separator, align)
+                for index in range(len(lines)):
+                    to_return.append(column_separator)
+                    to_return[-1] += lines[index]
+            else:   # single line
+                to_return.append(column_separator)
+                to_return[-1] += self.draw_line_single(i, keys, column_separator, align)
 
             # line separator
             to_return.append(separator_values_lines)
