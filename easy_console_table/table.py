@@ -180,7 +180,7 @@ class Table:
                     return True
         return False
 
-    def draw_line_single(self, index: int, keys: list[str], column_separator: str, align: str) -> str:
+    def _draw_line_single(self, index: int, keys: list[str], column_separator: str, align: str) -> str:
         """ Private method to draw a full line on a single line
             :param index: int -> line to draw
             :param keys: list[str] -> all the keys
@@ -201,7 +201,7 @@ class Table:
 
         return line
 
-    def draw_multiline(self, index: int, keys: list[str], column_separator: str, align: str) -> list[str]:
+    def _draw_multiline(self, index: int, keys: list[str], column_separator: str, align: str) -> list[str]:
         """ Private method to draw a multi-line line
             :param index: int -> line to draw
             :param keys: list[str] -> all the keys
@@ -275,13 +275,13 @@ class Table:
         for i in range(longest_column):
             # multi-line
             if self._search_value_in_columns_index(i, "\n"):
-                lines = self.draw_multiline(i, keys, column_separator, align)
+                lines = self._draw_multiline(i, keys, column_separator, align)
                 for index in range(len(lines)):
                     to_return.append(column_separator)
                     to_return[-1] += lines[index]
             else:   # single line
                 to_return.append(column_separator)
-                to_return[-1] += self.draw_line_single(i, keys, column_separator, align)
+                to_return[-1] += self._draw_line_single(i, keys, column_separator, align)
 
             # line separator
             to_return.append(separator_values_lines)
