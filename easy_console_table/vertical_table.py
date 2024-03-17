@@ -20,7 +20,7 @@ def _get_max_lenght_key(keys: list[str]) -> int:
     return max_digit_key + 1
 
 
-class TableHorizontal(TableABC):
+class VerticalTable(TableABC):
     """ Class to create a vertical table with name as key and list as values
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options
@@ -39,18 +39,10 @@ class TableHorizontal(TableABC):
             :param file_name: str -> file name to use
         """
         keys = [key for key in self.table.keys() if key not in self.filter]
-        longest_column = self._get_longest_column()
         with open(f"{file_name}.csv", "w") as f:
-            f.write(",".join(keys) + "\n")  # titles
-            # values
-            for i in range(longest_column):
-                values = []
-                for key in keys:
-                    if len(self.table[key]) - 1 >= i:  # existing value
-                        values.append(str(self.table[key][i]))
-                    else:  # non-existing value
-                        values.append("")
-                f.write(",".join(values) + "\n")
+            for key in keys:
+                values = [val.replace("\n", " ") for val in self.table[key]]
+                f.write(str(key).replace("\n", " ") + "," + ",".join(values) + "\n")
 
     def _search_value_in_columns_key(self, key: str, value: str) -> bool:
         """ Private method to search a value in a column

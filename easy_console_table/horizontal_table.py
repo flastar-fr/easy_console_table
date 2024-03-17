@@ -17,7 +17,7 @@ def _get_lenght_key(key: str) -> int:
     return len(max(splitted_list, key=lambda x: len(x)))
 
 
-class TableVertical(TableABC):
+class VerticalTable(TableABC):
     """ Class to create a vertical table with name as key and list as values
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options
