@@ -6,6 +6,11 @@ alignment = {"left": "<", "center": "^", "right": ">"}
 
 
 class TableABC(ABC):
+    """ Abstract class for tables of easy-console-table package, implemented with a dict
+        :atr table: dict -> contains all the datas
+        :atr options: dict -> contains all the customizable options
+        :atr filter: list -> contains the column's name to not show
+    """
     def __init__(self, **kwargs):
         self.table = {}
         self.options = {"alignment": "right",
@@ -132,3 +137,15 @@ class TableABC(ABC):
             :param file_name: str -> file name to use
         """
         pass
+
+    def _get_longest_column(self) -> int:
+        """ Private method to get the longest list contained in the table
+            :return: int -> longest column lenght
+        """
+        return len(max(self.table.values(), key=lambda x: len(x)))
+
+    @abstractmethod
+    def __str__(self) -> str:
+        """ Special method to get the str format of the table
+            :return: str -> the table
+        """

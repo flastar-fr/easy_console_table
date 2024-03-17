@@ -1,1 +1,2 @@
 from easy_console_table.table_vertical import TableVertical
+from easy_console_table.table_horizontal import TableHorizontal
