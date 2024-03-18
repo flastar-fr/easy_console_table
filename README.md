@@ -19,9 +19,9 @@ A package to easily create a console table that can render this :
 Code to make the introduction table :
 
 ```py
-from easy_console_table import VerticalTable
+from easy_console_table import HorizontalTable
 
-t = VerticalTable()
+t = HorizontalTable()
 t.add_column("Hello", ["Hello", "World"])
 t.add_column("World", [1, 2, 3])
 print(t)
@@ -78,9 +78,9 @@ You can export the table to a CSV file by using ``export_as_csv`` method that ta
 Code :
 
 ```py
-from easy_console_table import VerticalTable
+from easy_console_table import HorizontalTable
 
-t = VerticalTable(alignment="center", title_separator="#", line_separator="-", column_separator="I")
+t = HorizontalTable(alignment="center", title_separator="#", line_separator="-", column_separator="I")
 t.add_column("Hello", ["World", "!", "Hello"])
 t.add_column("Sort", [2, 3, 1])
 t.add_column("trash", ["Dont", "Work", "As", "It", "Should"])

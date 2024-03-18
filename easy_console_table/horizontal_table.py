@@ -1,4 +1,4 @@
-from easy_console_table.table_abc import TableABC
+from easy_console_table.table_abc_main import TableABCMain
 
 alignment = {"left": "<", "center": "^", "right": ">"}
 
@@ -17,7 +17,7 @@ def _get_lenght_key(key: str) -> int:
     return len(max(splitted_list, key=lambda x: len(x)))
 
 
-class VerticalTable(TableABC):
+class HorizontalTable(TableABCMain):
     """ Class to create a vertical table with name as key and list as values
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options
@@ -55,7 +55,7 @@ class VerticalTable(TableABC):
         """
         max_value = _get_lenght_key(column_name)
         for val in self.table[column_name]:
-            lines = val.split('\n')
+            lines = str(val).split('\n')
             max_line_length = max(len(line) for line in lines)
             if max_line_length > max_value:
                 max_value = max_line_length
@@ -102,46 +102,23 @@ class VerticalTable(TableABC):
 
         return lines
 
-    def _draw_line_single(self, index: int, keys: list[str], column_separator: str, align: str) -> str:
-        """ Private method to draw a full line on a single line
+    def _draw_line(self, index: int, keys: list[str], column_separator: str, align: str) -> list[str]:
+        """ Private method to draw a line (supports multi-line)
             :param index: int -> line to draw
             :param keys: list[str] -> all the keys
             :param column_separator: str -> character use to separate columns
             :param align: str -> character use to align (<, ^, >)
 
-            :return: str -> the full line
+            :return: str -> lines
         """
-        line = ""
-
-        for key in keys:
-            if len(self.table[key]) - 1 >= index:  # existing value
-                value = self.table[key][index]
-            else:  # non-existing value
-                value = ""
-            max_digit_value = self._get_max_lenght_value(key)
-            line += f" {value: {align}{max_digit_value + 3}} {column_separator}"
-
-        return line
-
-    def _draw_multiline(self, index: int, keys: list[str], column_separator: str, align: str) -> list[str]:
-        """ Private method to draw a multi-line line
-            :param index: int -> line to draw
-            :param keys: list[str] -> all the keys
-            :param column_separator: str -> character use to separate columns
-            :param align: str -> character use to align (<, ^, >)
-
-            :return: str -> multi-lines
-        """
-        assert self._search_value_in_columns_index(index, "\n"), "Method must be used for multi-line purposes"
-
         # get datas
         splitted_lines = []
         for column in [val for key, val in self.table.items() if key not in self.filter]:
             if len(column) - 1 >= index:
-                if "\n" in column[index]:
-                    splitted_lines.append(column[index].split("\n"))
+                if "\n" in str(column[index]):
+                    splitted_lines.append(str(column[index]).split("\n"))
                 else:
-                    splitted_lines.append([column[index]])
+                    splitted_lines.append([str(column[index])])
             else:
                 splitted_lines.append([])
 
@@ -152,7 +129,7 @@ class VerticalTable(TableABC):
                 column.append("")
 
         # draw line
-        lines: list[str] = ["" for _ in range(max_line)]
+        lines: list[str] = ["|" for _ in range(max_line)]
 
         for i in range(len(splitted_lines)):
             max_digit_value = self._get_max_lenght_value(keys[i])
@@ -201,17 +178,10 @@ class VerticalTable(TableABC):
         # (column separator + draw a column) * amount of column + column separator
         longest_column = self._get_longest_column()
         for i in range(longest_column):
-            # multi-line
-            if self._search_value_in_columns_index(i, "\n"):
-                lines = self._draw_multiline(i, keys, column_separator, align)
-                for index in range(len(lines)):
-                    to_return.append(column_separator)
-                    to_return[-1] += lines[index]
-            else:   # single line
-                to_return.append(column_separator)
-                to_return[-1] += self._draw_line_single(i, keys, column_separator, align)
+            lines = self._draw_line(i, keys, column_separator, align)
+            for line in lines:
+                to_return.append(line)
 
-            # line separator
             to_return.append(separator_values_lines)
 
         return "\n".join(to_return)

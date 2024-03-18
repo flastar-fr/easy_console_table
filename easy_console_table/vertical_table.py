@@ -1,4 +1,4 @@
-from easy_console_table.table_abc import TableABC
+from easy_console_table.table_abc_main import TableABCMain
 
 alignment = {"left": "<", "center": "^", "right": ">"}
 
@@ -20,7 +20,7 @@ def _get_max_lenght_key(keys: list[str]) -> int:
     return max_digit_key + 1
 
 
-class VerticalTable(TableABC):
+class VerticalTable(TableABCMain):
     """ Class to create a vertical table with name as key and list as values
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options
@@ -63,23 +63,23 @@ class VerticalTable(TableABC):
         max_value = 0
         for column in self.table.values():
             if len(column) - 1 >= index:
-                if "\n" in column[index]:
-                    lines = column[index].split('\n')
+                if "\n" in str(column[index]):
+                    lines = str(column[index]).split('\n')
                 else:
-                    lines = [column[index]]
+                    lines = [str(column[index])]
                 max_line_length = len(max(lines, key=lambda x: len(x)))
                 if max_line_length > max_value:
                     max_value = max_line_length
 
         return max_value + 1  # +1 to have a better result
 
-    def draw_multiline(self,
-                       keys: list[str],
-                       key: str,
-                       title_separator: str,
-                       column_separator: str,
-                       align: str) -> list[str]:
-        """ Private method to draw a multi-line line
+    def _draw_line(self,
+                   keys: list[str],
+                   key: str,
+                   title_separator: str,
+                   column_separator: str,
+                   align: str) -> list[str]:
+        """ Private method to draw a line (supports multi-line)
             :param keys: list[str] -> all keys
             :param key: str -> key to draw
             :param title_separator: str -> separator of title
@@ -96,10 +96,10 @@ class VerticalTable(TableABC):
             splitted_lines.append([key])
 
         for val in self.table[key]:
-            if "\n" in val:
-                splitted_lines.append(val.split("\n"))
+            if "\n" in str(val):
+                splitted_lines.append(str(val).split("\n"))
             else:
-                splitted_lines.append([val])
+                splitted_lines.append([str(val)])
 
         while len(splitted_lines) - 1 != self._get_longest_column():
             splitted_lines.append([""])
@@ -141,17 +141,19 @@ class VerticalTable(TableABC):
         column_separator: str = self.options["column_separator"]
         line_separator: str = self.options["line_separator"]
 
+        # display title
         max_key = _get_max_lenght_key(keys)
         longest_column = self._get_longest_column()
-        separator_value_line = title_separator + (max_key + 5) * line_separator + title_separator
+        separator_value_line = title_separator + (max_key + 5)*line_separator + title_separator
         for i in range(longest_column):
             max_digit_value = self._get_max_lenght_value(i)
             separator_value_line += line_separator * (max_digit_value + 5) + column_separator
 
         to_return = [separator_value_line]
 
+        # display values
         for key in keys:
-            lines = self.draw_multiline(keys, key, title_separator, column_separator, align)
+            lines = self._draw_line(keys, key, title_separator, column_separator, align)
             for line in lines:
                 to_return.append(line)
 
