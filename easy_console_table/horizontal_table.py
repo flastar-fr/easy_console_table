@@ -28,7 +28,8 @@ class HorizontalTable(TableABCSEntry):
         self.options = {"alignment": "right",
                         "title_separator": "-",
                         "column_separator": "|",
-                        "line_separator": "_"}
+                        "line_separator": "_",
+                        "alignment_title": "center"}
         self.config(**kwargs)
 
     def export_as_csv(self, file_name: str):
@@ -75,7 +76,7 @@ class HorizontalTable(TableABCSEntry):
                     return True
         return False
 
-    def _draw_titles(self, keys: list[str], column_separator: str) -> list[str]:
+    def _draw_titles(self, keys: list[str], column_separator: str, align_title: str) -> list[str]:
         """ Private method to draw the titles of the table
             :param keys: list[str] -> keys to draw
             :param column_separator: str -> char to separate columns
@@ -104,7 +105,7 @@ class HorizontalTable(TableABCSEntry):
 
             for j in range(max_line):
                 value = splitted_lines[i][j]
-                lines[j] += f" {value: ^{max_lenght + 3}} {column_separator}"
+                lines[j] += f" {value: {align_title}{max_lenght + 3}} {column_separator}"
 
         return lines
 
@@ -158,6 +159,7 @@ class HorizontalTable(TableABCSEntry):
         title_separator: str = self.options["title_separator"]
         column_separator: str = self.options["column_separator"]
         line_separator: str = self.options["line_separator"]
+        alignment_title: str = alignment[self.options["alignment_title"]]
 
         # titles display
         # draw a column * amount of column (don't take last chars depending of amount of columns)
@@ -175,7 +177,7 @@ class HorizontalTable(TableABCSEntry):
         to_return.append(title_separator_line)
 
         # draw titles
-        for line in self._draw_titles(keys, column_separator):
+        for line in self._draw_titles(keys, column_separator, alignment_title):
             to_return.append(line)
 
         to_return.append(title_separator_line)

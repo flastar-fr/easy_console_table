@@ -31,7 +31,8 @@ class VerticalTable(TableABCSEntry):
         self.options = {"alignment": "right",
                         "title_separator": "#",
                         "column_separator": "|",
-                        "line_separator": "-"}
+                        "line_separator": "-",
+                        "alignment_title": "center"}
         self.config(**kwargs)
 
     def export_as_csv(self, file_name: str):
@@ -78,7 +79,8 @@ class VerticalTable(TableABCSEntry):
                    key: str,
                    title_separator: str,
                    column_separator: str,
-                   align: str) -> list[str]:
+                   align: str,
+                   align_title: str) -> list[str]:
         """ Private method to draw a line (supports multi-line)
             :param keys: list[str] -> all keys
             :param key: str -> key to draw
@@ -116,7 +118,7 @@ class VerticalTable(TableABCSEntry):
         # key
         max_digit_key = _get_max_lenght_key(keys)
         for i, val in enumerate(splitted_lines[0]):
-            lines[i] += f"{title_separator} {val: ^{max_digit_key + 3}} {title_separator}"
+            lines[i] += f"{title_separator} {val: {align_title}{max_digit_key + 3}} {title_separator}"
 
         # values
         for i in range(1, len(splitted_lines)):
@@ -140,6 +142,7 @@ class VerticalTable(TableABCSEntry):
         title_separator: str = self.options["title_separator"]
         column_separator: str = self.options["column_separator"]
         line_separator: str = self.options["line_separator"]
+        alignment_title: str = alignment[self.options["alignment_title"]]
 
         # display title
         max_key = _get_max_lenght_key(keys)
@@ -153,7 +156,7 @@ class VerticalTable(TableABCSEntry):
 
         # display values
         for key in keys:
-            lines = self._draw_line(keys, key, title_separator, column_separator, align)
+            lines = self._draw_line(keys, key, title_separator, column_separator, align, alignment_title)
             for line in lines:
                 to_return.append(line)
 

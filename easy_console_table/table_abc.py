@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from easy_console_table.table_error import TableError
 
-
 alignment = {"left": "<", "center": "^", "right": ">"}
 
 
@@ -11,12 +10,14 @@ class TableABC(ABC):
         :atr options: dict -> contains all the customizable options
         :atr filter: list -> contains the column's name to not show
     """
+
     def __init__(self, **kwargs):
         self.table = {}
         self.options = {"alignment": "right",
                         "title_separator": "-",
                         "column_separator": "|",
-                        "line_separator": "_"}
+                        "line_separator": "_",
+                        "alignment_title": "center"}
         self.config(**kwargs)
         self.filter = []
 
@@ -29,11 +30,15 @@ class TableABC(ABC):
         for key in kwargs.keys():
             if key not in self.options.keys():
                 raise TableError(f"Invalid {key} argument, argument should be in : "
-                                  f"{', '.join(self.options.keys())}")
+                                 f"{', '.join(self.options.keys())}")
         if "alignment" in kwargs.keys():
             if kwargs["alignment"] not in alignment.keys():
                 raise TableError(f"Invalid alignment {kwargs['alignmen']} argument,"
-                                  f" it should be in : {', '.join(alignment.keys())}")
+                                 f" it should be in : {', '.join(alignment.keys())}")
+        elif "alignment_title" in kwargs.keys():
+            if kwargs["alignment_title"] not in alignment.keys():
+                raise TableError(f"Invalid alignment {kwargs['alignmen']} argument,"
+                                 f" it should be in : {', '.join(alignment.keys())}")
 
         # config
         for key, value in kwargs.items():

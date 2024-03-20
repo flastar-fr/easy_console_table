@@ -49,7 +49,8 @@ class TwoEntryTable(TableABC):
         self.options = {"alignment": "right",
                         "title_separator": "#",
                         "column_separator": "|",
-                        "line_separator": "-"}
+                        "line_separator": "-",
+                        "alignment_title": "center"}
 
     def get_line_names(self) -> list[str]:
         """ Method to get all the lines
@@ -247,8 +248,8 @@ class TwoEntryTable(TableABC):
                      keys: list[str],
                      line_names: list[str],
                      column_separator: str,
-                     title_separator: str
-                     ) -> list[str]:
+                     title_separator: str,
+                     align_title: str) -> list[str]:
         """ Private method to draw the titles of the table
             :param keys: list[str] -> keys to draw
             :param line_names: list[str] -> make possible to draw the gap at the beginning
@@ -278,7 +279,7 @@ class TwoEntryTable(TableABC):
 
             for j in range(max_line):
                 value = splitted_lines[i][j]
-                lines[j] += f" {value: ^{max_lenght + 3}} {column_separator}"
+                lines[j] += f" {value: {align_title}{max_lenght + 3}} {column_separator}"
 
         # align to a Two Entry format (puting space for lines keys drawing)
         max_digits = _get_max_lenght_key(line_names)
@@ -293,7 +294,8 @@ class TwoEntryTable(TableABC):
                    key: str,
                    title_separator: str,
                    column_separator: str,
-                   align: str) -> list[str]:
+                   align: str,
+                   align_title: str) -> list[str]:
         """ Private method to draw a line (supports multi-line)
             :param lines: list[str] -> lines
             :param columns: list[str] -> columns
@@ -332,7 +334,7 @@ class TwoEntryTable(TableABC):
         # key
         max_digit_key = _get_max_lenght_key(lines)
         for i, val in enumerate(splitted_lines[0]):
-            to_return[i] += f"{title_separator} {val: ^{max_digit_key + 3}} {title_separator}"
+            to_return[i] += f"{title_separator} {val: {align_title}{max_digit_key + 3}} {title_separator}"
 
         # values
         for i in range(1, len(splitted_lines)):
@@ -355,6 +357,7 @@ class TwoEntryTable(TableABC):
         title_separator: str = self.options["title_separator"]
         column_separator: str = self.options["column_separator"]
         line_separator: str = self.options["line_separator"]
+        alignment_title: str = alignment[self.options["alignment_title"]]
 
         # titles display
         # draw a column * amount of column (don't take last chars depending of amount of columns)
@@ -373,7 +376,7 @@ class TwoEntryTable(TableABC):
         to_return.append(title_separator_line)
 
         # draw titles
-        title = self._draw_titles(columns, lines, column_separator, title_separator)
+        title = self._draw_titles(columns, lines, column_separator, title_separator, alignment_title)
         for line in title:
             to_return.append(line)
 
@@ -381,7 +384,7 @@ class TwoEntryTable(TableABC):
 
         # display values
         for key in lines:
-            to_print = self._draw_line(lines, columns, key, title_separator, column_separator, align)
+            to_print = self._draw_line(lines, columns, key, title_separator, column_separator, align, alignment_title)
             for line in to_print:
                 to_return.append(line)
 
