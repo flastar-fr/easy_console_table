@@ -24,7 +24,7 @@ class TableABC(ABC):
     def config(self, **kwargs):
         """ Method to configure the options for the table to show
             :param kwargs: dict -> Valid options :
-             alignment=str, title_separator=str, column_separator=str, line_separator=str
+             alignment:str, title_separator:str, column_separator:str, line_separator:str, alignment_title:str
         """
         # exception tests
         for key in kwargs.keys():
