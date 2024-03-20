@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from easy_console_table.columnerror import ColumnError
+from easy_console_table.table_error import TableError
 
 
 alignment = {"left": "<", "center": "^", "right": ">"}
@@ -17,6 +17,7 @@ class TableABC(ABC):
                         "title_separator": "-",
                         "column_separator": "|",
                         "line_separator": "_"}
+        self.config(**kwargs)
         self.filter = []
 
     def config(self, **kwargs):
@@ -27,11 +28,11 @@ class TableABC(ABC):
         # exception tests
         for key in kwargs.keys():
             if key not in self.options.keys():
-                raise ColumnError(f"Invalid {key} argument, argument should be in : "
+                raise TableError(f"Invalid {key} argument, argument should be in : "
                                   f"{', '.join(self.options.keys())}")
         if "alignment" in kwargs.keys():
             if kwargs["alignment"] not in alignment.keys():
-                raise ColumnError(f"Invalid alignment {kwargs['alignmen']} argument,"
+                raise TableError(f"Invalid alignment {kwargs['alignmen']} argument,"
                                   f" it should be in : {', '.join(alignment.keys())}")
 
         # config
@@ -68,6 +69,13 @@ class TableABC(ABC):
     @abstractmethod
     def clear_filter(self):
         """ Method to clear the filter """
+        pass
+
+    @abstractmethod
+    def export_as_csv(self, file_name: str):
+        """ Method to export into a CSV file with filter
+            :param file_name: str -> file name to use
+        """
         pass
 
     def __str__(self) -> str:

@@ -1,4 +1,4 @@
-from easy_console_table.table_abc_main import TableABCMain
+from easy_console_table.table_abc_s_entry import TableABCSEntry
 
 alignment = {"left": "<", "center": "^", "right": ">"}
 
@@ -20,7 +20,7 @@ def _get_max_lenght_key(keys: list[str]) -> int:
     return max_digit_key + 1
 
 
-class VerticalTable(TableABCMain):
+class VerticalTable(TableABCSEntry):
     """ Class to create a vertical table with name as key and list as values
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options

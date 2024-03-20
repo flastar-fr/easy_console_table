@@ -1,9 +1,9 @@
 from abc import abstractmethod
-from easy_console_table.columnerror import ColumnError
+from easy_console_table.table_error import TableError
 from table_abc import TableABC
 
 
-class TableABCMain(TableABC):
+class TableABCSEntry(TableABC):
     """ Abstract class for tables of easy-console-table package, implemented with a dict
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options
@@ -16,7 +16,7 @@ class TableABCMain(TableABC):
             :param datas: list -> column's values to create
         """
         if not isinstance(datas, list):
-            raise ColumnError("Column must be a list type")
+            raise TableError("Column must be a list type")
         self.table[name] = datas
 
     def delete_column(self, name: str):
@@ -24,7 +24,7 @@ class TableABCMain(TableABC):
             :param name: str -> column's name to delete
         """
         if name not in self.table.keys():
-            raise ColumnError("Column's name not in table")
+            raise TableError("Column's name not in table")
         if name in self.filter:
             self.remove_filter(name)
         self.table.pop(name)
@@ -35,9 +35,9 @@ class TableABCMain(TableABC):
             :param values: list -> value to set to column
         """
         if name not in self.table.keys():
-            raise ColumnError("Column's name not in table")
+            raise TableError("Column's name not in table")
         if not isinstance(values, list):
-            raise ColumnError("Column must be a list type")
+            raise TableError("Column must be a list type")
         self.table[name] = values
 
     def get_column(self, name: str) -> list:
@@ -47,7 +47,7 @@ class TableABCMain(TableABC):
             :return: list -> the column
         """
         if name not in self.table.keys():
-            raise ColumnError("Column's name not in table")
+            raise TableError("Column's name not in table")
         return self.table[name]
 
     def get_is_perfect(self) -> bool:
@@ -71,7 +71,7 @@ class TableABCMain(TableABC):
             :param key: str -> key filtered
         """
         if key not in self.table.keys():
-            raise ColumnError(f"Key {key} not in table keys")
+            raise TableError(f"Key {key} not in table keys")
         self.filter.append(key)
 
     def remove_filter(self, key: str):
@@ -79,7 +79,7 @@ class TableABCMain(TableABC):
             :param key: str -> key remove
         """
         if key not in self.filter:
-            raise ColumnError(f"Key {key} not in filter")
+            raise TableError(f"Key {key} not in filter")
         self.filter.remove(key)
 
     def clear_filter(self):
@@ -91,7 +91,7 @@ class TableABCMain(TableABC):
             :param column_name: str -> column name use to sort all the table
         """
         if not self.get_is_perfect():
-            raise ColumnError("Table values should have the same lenght")
+            raise TableError("Table values should have the same lenght")
         from_column = self.table[column_name]
         for key, value in self.table.items():
             self.table[key] = [x for _, x in sorted(zip(from_column, value))]

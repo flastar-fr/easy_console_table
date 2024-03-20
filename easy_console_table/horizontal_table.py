@@ -1,4 +1,4 @@
-from easy_console_table.table_abc_main import TableABCMain
+from easy_console_table.table_abc_s_entry import TableABCSEntry
 
 alignment = {"left": "<", "center": "^", "right": ">"}
 
@@ -17,7 +17,7 @@ def _get_lenght_key(key: str) -> int:
     return len(max(splitted_list, key=lambda x: len(x)))
 
 
-class HorizontalTable(TableABCMain):
+class HorizontalTable(TableABCSEntry):
     """ Class to create a vertical table with name as key and list as values
         :atr table: dict -> contains all the datas
         :atr options: dict -> contains all the customizable options
@@ -75,7 +75,13 @@ class HorizontalTable(TableABCMain):
                     return True
         return False
 
-    def draw_titles(self, keys: list[str], column_separator: str) -> list[str]:
+    def _draw_titles(self, keys: list[str], column_separator: str) -> list[str]:
+        """ Private method to draw the titles of the table
+            :param keys: list[str] -> keys to draw
+            :param column_separator: str -> char to separate columns
+
+            :return: list[str] -> a list that contains the lines
+        """
         # get datas
         splitted_lines = []
         for key in keys:
@@ -169,7 +175,7 @@ class HorizontalTable(TableABCMain):
         to_return.append(title_separator_line)
 
         # draw titles
-        for line in self.draw_titles(keys, column_separator):
+        for line in self._draw_titles(keys, column_separator):
             to_return.append(line)
 
         to_return.append(title_separator_line)
