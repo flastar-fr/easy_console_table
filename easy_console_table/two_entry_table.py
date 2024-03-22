@@ -319,7 +319,7 @@ class TwoEntryTable(TableABC):
             :return: str -> multi-lines
         """
         # get datas
-        splitted_lines = []
+        splitted_lines: list[list[str]] = []
         if "\n" in key:
             splitted_lines.append(key.split("\n"))
         else:
@@ -363,8 +363,8 @@ class TwoEntryTable(TableABC):
                     :return: str -> the table
                 """
         # get datas
-        columns = [value for value in list(self._columns) if value not in self.filter]
-        lines = [value for value in list(self._lines) if value not in self.filter]
+        columns: list[str] = [value for value in list(self._columns) if value not in self.filter]
+        lines: list[str] = [value for value in list(self._lines) if value not in self.filter]
         align: str = alignment[self._options["alignment"]]
         title_separator: str = self._options["title_separator"]
         column_separator: str = self._options["column_separator"]
