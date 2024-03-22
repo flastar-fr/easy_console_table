@@ -17,28 +17,28 @@ class TableABCSEntry(TableABC):
         """
         if not isinstance(datas, list):
             raise TableError("Column must be a list type")
-        self.table[name] = datas
+        self._table[name] = datas
 
     def delete_column(self, name: str):
         """ Method to delete a column to the table
             :param name: str -> column's name to delete
         """
-        if name not in self.table.keys():
+        if name not in self._table.keys():
             raise TableError("Column's name not in table")
         if name in self.filter:
             self.remove_filter(name)
-        self.table.pop(name)
+        self._table.pop(name)
 
     def set_column(self, name: str, values: list):
         """ Method to set a column value
             :param name: str -> column name to set
             :param values: list -> value to set to column
         """
-        if name not in self.table.keys():
+        if name not in self._table.keys():
             raise TableError("Column's name not in table")
         if not isinstance(values, list):
             raise TableError("Column must be a list type")
-        self.table[name] = values
+        self._table[name] = values
 
     def get_column(self, name: str) -> list:
         """ Method to get the column list with the name
@@ -46,16 +46,16 @@ class TableABCSEntry(TableABC):
 
             :return: list -> the column
         """
-        if name not in self.table.keys():
+        if name not in self._table.keys():
             raise TableError("Column's name not in table")
-        return self.table[name]
+        return self._table[name]
 
     def get_is_perfect(self) -> bool:
         """ Method to know if all column's lenght is the same
             :return: bool -> True if it is the same, False if it is not the same
         """
-        default_len = len(list(self.table.values())[0])
-        for value in self.table.values():
+        default_len = len(list(self._table.values())[0])
+        for value in self._table.values():
             if len(value) != default_len:
                 return False
         return True
@@ -70,7 +70,7 @@ class TableABCSEntry(TableABC):
         """ Method to add a filter
             :param key: str -> key filtered
         """
-        if key not in self.table.keys():
+        if key not in self._table.keys():
             raise TableError(f"Key {key} not in table keys")
         self.filter.append(key)
 
@@ -92,9 +92,9 @@ class TableABCSEntry(TableABC):
         """
         if not self.get_is_perfect():
             raise TableError("Table values should have the same lenght")
-        from_column = self.table[column_name]
-        for key, value in self.table.items():
-            self.table[key] = [x for _, x in sorted(zip(from_column, value))]
+        from_column = self._table[column_name]
+        for key, value in self._table.items():
+            self._table[key] = [x for _, x in sorted(zip(from_column, value))]
 
     @abstractmethod
     def export_as_csv(self, file_name: str):
@@ -107,4 +107,4 @@ class TableABCSEntry(TableABC):
         """ Private method to get the longest list contained in the table
             :return: int -> longest column lenght
         """
-        return len(max(self.table.values(), key=lambda x: len(x)))
+        return len(max(self._table.values(), key=lambda x: len(x)))

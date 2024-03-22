@@ -4,6 +4,11 @@ alignment = {"left": "<", "center": "^", "right": ">"}
 
 
 def _get_max_lenght_key(keys: list[str]) -> int:
+    """ Private function to get the longest line name value
+        :param keys: list[str] -> line values
+
+        :return: int -> lenght
+    """
     max_digit_key = 0
     splitted_lines = []
     for key in keys:
@@ -26,23 +31,24 @@ class VerticalTable(TableABCSEntry):
         :atr options: dict -> contains all the customizable options
         :atr filter: list -> contains the column's name to not show
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.options = {"alignment": "right",
-                        "title_separator": "#",
-                        "column_separator": "|",
-                        "line_separator": "-",
-                        "alignment_title": "center"}
+        self._options = {"alignment": "right",
+                         "title_separator": "#",
+                         "column_separator": "|",
+                         "line_separator": "-",
+                         "alignment_title": "center"}
         self.config(**kwargs)
 
     def export_as_csv(self, file_name: str):
         """ Method to export into a CSV file with filter
             :param file_name: str -> file name to use
         """
-        keys = [key for key in self.table.keys() if key not in self.filter]
+        keys = [key for key in self._table.keys() if key not in self.filter]
         with open(f"{file_name}.csv", "w") as f:
             for key in keys:
-                values = [val.replace("\n", " ") for val in self.table[key]]
+                values = [val.replace("\n", " ") for val in self._table[key]]
                 f.write(str(key).replace("\n", " ") + "," + ",".join(values) + "\n")
 
     def _search_value_in_columns_key(self, key: str, value: str) -> bool:
@@ -52,7 +58,7 @@ class VerticalTable(TableABCSEntry):
 
             :return: bool -> True if value in, otherwise False
         """
-        for val in self.table[key]:
+        for val in self._table[key]:
             if value in val:
                 return True
         return False
@@ -62,7 +68,7 @@ class VerticalTable(TableABCSEntry):
             :return: int -> max lenght value
         """
         max_value = 0
-        for column in self.table.values():
+        for column in self._table.values():
             if len(column) - 1 >= index:
                 if "\n" in str(column[index]):
                     lines = str(column[index]).split('\n')
@@ -97,7 +103,7 @@ class VerticalTable(TableABCSEntry):
         else:
             splitted_lines.append([key])
 
-        for val in self.table[key]:
+        for val in self._table[key]:
             if "\n" in str(val):
                 splitted_lines.append(str(val).split("\n"))
             else:
@@ -122,7 +128,7 @@ class VerticalTable(TableABCSEntry):
 
         # values
         for i in range(1, len(splitted_lines)):
-            max_digit_value = self._get_max_lenght_value(i-1)
+            max_digit_value = self._get_max_lenght_value(i - 1)
 
             for j in range(max_line):
                 value = splitted_lines[i][j]
@@ -134,20 +140,20 @@ class VerticalTable(TableABCSEntry):
         """ Special method to get the str format of the table
             :return: str -> the table
         """
-        if len(self.table) == 0:
+        if len(self._table) == 0:
             return ""
 
-        keys: list[str] = [value for value in list(self.table.keys()) if value not in self.filter]
-        align: str = alignment[self.options["alignment"]]
-        title_separator: str = self.options["title_separator"]
-        column_separator: str = self.options["column_separator"]
-        line_separator: str = self.options["line_separator"]
-        alignment_title: str = alignment[self.options["alignment_title"]]
+        keys: list[str] = [value for value in list(self._table.keys()) if value not in self.filter]
+        align: str = alignment[self._options["alignment"]]
+        title_separator: str = self._options["title_separator"]
+        column_separator: str = self._options["column_separator"]
+        line_separator: str = self._options["line_separator"]
+        alignment_title: str = alignment[self._options["alignment_title"]]
 
         # display title
         max_key = _get_max_lenght_key(keys)
         longest_column = self._get_longest_column()
-        separator_value_line = title_separator + (max_key + 5)*line_separator + title_separator
+        separator_value_line = title_separator + (max_key + 5) * line_separator + title_separator
         for i in range(longest_column):
             max_digit_value = self._get_max_lenght_value(i)
             separator_value_line += line_separator * (max_digit_value + 5) + column_separator

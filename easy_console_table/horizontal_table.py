@@ -23,20 +23,21 @@ class HorizontalTable(TableABCSEntry):
         :atr options: dict -> contains all the customizable options
         :atr filter: list -> contains the column's name to not show
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.options = {"alignment": "right",
-                        "title_separator": "-",
-                        "column_separator": "|",
-                        "line_separator": "_",
-                        "alignment_title": "center"}
+        self._options = {"alignment": "right",
+                         "title_separator": "-",
+                         "column_separator": "|",
+                         "line_separator": "_",
+                         "alignment_title": "center"}
         self.config(**kwargs)
 
     def export_as_csv(self, file_name: str):
         """ Method to export into a CSV file with filter
             :param file_name: str -> file name to use
         """
-        keys = [key for key in self.table.keys() if key not in self.filter]
+        keys = [key for key in self._table.keys() if key not in self.filter]
         longest_column = self._get_longest_column()
         with open(f"{file_name}.csv", "w") as f:
             f.write(",".join(keys) + "\n")  # titles
@@ -44,8 +45,8 @@ class HorizontalTable(TableABCSEntry):
             for i in range(longest_column):
                 values = []
                 for key in keys:
-                    if len(self.table[key]) - 1 >= i:  # existing value
-                        values.append(str(self.table[key][i]))
+                    if len(self._table[key]) - 1 >= i:  # existing value
+                        values.append(str(self._table[key][i]))
                     else:  # non-existing value
                         values.append("")
                 f.write(",".join(values) + "\n")
@@ -55,7 +56,7 @@ class HorizontalTable(TableABCSEntry):
             :return: int -> max lenght value
         """
         max_value = _get_lenght_key(column_name)
-        for val in self.table[column_name]:
+        for val in self._table[column_name]:
             lines = str(val).split('\n')
             max_line_length = max(len(line) for line in lines)
             if max_line_length > max_value:
@@ -70,7 +71,7 @@ class HorizontalTable(TableABCSEntry):
 
             :return: bool -> True if value in, otherwise False
         """
-        for column in self.table.values():
+        for column in self._table.values():
             if len(column) - 1 >= index:
                 if value in column[index]:
                     return True
@@ -120,7 +121,7 @@ class HorizontalTable(TableABCSEntry):
         """
         # get datas
         splitted_lines = []
-        for column in [val for key, val in self.table.items() if key not in self.filter]:
+        for column in [val for key, val in self._table.items() if key not in self.filter]:
             if len(column) - 1 >= index:
                 if "\n" in str(column[index]):
                     splitted_lines.append(str(column[index]).split("\n"))
@@ -151,15 +152,15 @@ class HorizontalTable(TableABCSEntry):
         """ Special method to get the str format of the table
             :return: str -> the table
         """
-        if self.table == {}:
+        if self._table == {}:
             return ""
 
-        keys = [value for value in list(self.table.keys()) if value not in self.filter]
-        align: str = alignment[self.options["alignment"]]
-        title_separator: str = self.options["title_separator"]
-        column_separator: str = self.options["column_separator"]
-        line_separator: str = self.options["line_separator"]
-        alignment_title: str = alignment[self.options["alignment_title"]]
+        keys = [value for value in list(self._table.keys()) if value not in self.filter]
+        align: str = alignment[self._options["alignment"]]
+        title_separator: str = self._options["title_separator"]
+        column_separator: str = self._options["column_separator"]
+        line_separator: str = self._options["line_separator"]
+        alignment_title: str = alignment[self._options["alignment_title"]]
 
         # titles display
         # draw a column * amount of column (don't take last chars depending of amount of columns)
@@ -173,7 +174,7 @@ class HorizontalTable(TableABCSEntry):
             separator_values_lines += f" {line_separator * (max_digit_value + 3)} {column_separator}"
 
         if len(keys) > 1:
-            title_separator_line = title_separator_line[:-len(keys)+1]
+            title_separator_line = title_separator_line[:-len(keys) + 1]
         to_return.append(title_separator_line)
 
         # draw titles

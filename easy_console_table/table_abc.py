@@ -12,12 +12,12 @@ class TableABC(ABC):
     """
 
     def __init__(self, **kwargs):
-        self.table = {}
-        self.options = {"alignment": "right",
-                        "title_separator": "-",
-                        "column_separator": "|",
-                        "line_separator": "_",
-                        "alignment_title": "center"}
+        self._table = {}
+        self._options = {"alignment": "right",
+                         "title_separator": "-",
+                         "column_separator": "|",
+                         "line_separator": "_",
+                         "alignment_title": "center"}
         self.config(**kwargs)
         self.filter = []
 
@@ -28,9 +28,9 @@ class TableABC(ABC):
         """
         # exception tests
         for key in kwargs.keys():
-            if key not in self.options.keys():
+            if key not in self._options.keys():
                 raise TableError(f"Invalid {key} argument, argument should be in : "
-                                 f"{', '.join(self.options.keys())}")
+                                 f"{', '.join(self._options.keys())}")
         if "alignment" in kwargs.keys():
             if kwargs["alignment"] not in alignment.keys():
                 raise TableError(f"Invalid alignment {kwargs['alignmen']} argument,"
@@ -42,13 +42,13 @@ class TableABC(ABC):
 
         # config
         for key, value in kwargs.items():
-            self.options[key] = value
+            self._options[key] = value
 
     def get_table(self) -> dict:
         """ Method to get the table
             :return: dict -> the whole table
         """
-        return self.table
+        return self._table
 
     @abstractmethod
     def get_filter(self) -> list:
