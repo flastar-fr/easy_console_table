@@ -156,6 +156,9 @@ class TwoEntryTable(TableABC):
 
         self.lines.remove(key)
 
+        if key in self.filter:
+            self.filter.remove(key)
+
     def remove_column(self, key: str):
         """ Method to remove a whole column
             :param key: str -> column to remove
@@ -168,6 +171,9 @@ class TwoEntryTable(TableABC):
                 continue
 
         self.columns.remove(key)
+
+        if key in self.filter:
+            self.filter.remove(key)
 
     def get_filter(self) -> list:
         """ Method to get the filter
@@ -266,8 +272,11 @@ class TwoEntryTable(TableABC):
             else:
                 splitted_lines.append([key])
 
+        splitted_title = self.title.split("\n")
+
         # uniformize datas
         max_line = len(max(splitted_lines, key=lambda x: len(x)))
+        max_line = max(len(splitted_title), max_line)
         for column in splitted_lines:
             while len(column) != max_line:
                 column.append("")
@@ -284,7 +293,6 @@ class TwoEntryTable(TableABC):
 
         # align to a Two Entry format (puting space for lines keys drawing)
         max_digits = _get_max_lenght_key(line_names + [self.title])
-        splitted_title = self.title.split("\n")
         while len(splitted_title) != max_line:
             splitted_title.append("")
         for i, val in enumerate(splitted_title):
