@@ -51,6 +51,7 @@ class TwoEntryTable(TableABC):
                         "column_separator": "|",
                         "line_separator": "-",
                         "alignment_title": "center"}
+        self.title = ""
 
     def get_line_names(self) -> list[str]:
         """ Method to get all the lines
@@ -213,7 +214,7 @@ class TwoEntryTable(TableABC):
         if column_name not in self.columns:
             raise TableError("Key doesn't exist")
 
-        max_value = _get_lenght_key(column_name)
+        max_value = max(_get_lenght_key(column_name), _get_lenght_key(self.title))
         for val in self.lines:
             try:
                 lines = str(self.table[(column_name, val)]).split('\n')
@@ -232,7 +233,7 @@ class TwoEntryTable(TableABC):
         if line_name not in self.columns:
             raise TableError("Key doesn't exist")
 
-        max_value = _get_lenght_key(line_name)
+        max_value = max(_get_lenght_key(line_name), _get_lenght_key(self.title))
         for val in self.lines:
             try:
                 lines = str(self.table[(line_name, val)]).split('\n')
@@ -282,9 +283,12 @@ class TwoEntryTable(TableABC):
                 lines[j] += f" {value: {align_title}{max_lenght + 3}} {column_separator}"
 
         # align to a Two Entry format (puting space for lines keys drawing)
-        max_digits = _get_max_lenght_key(line_names)
-        for i in range(len(lines)):
-            lines[i] = f"{title_separator} {(max_digits+3)*' '} " + lines[i]
+        max_digits = _get_max_lenght_key(line_names + [self.title])
+        splitted_title = self.title.split("\n")
+        while len(splitted_title) != max_line:
+            splitted_title.append("")
+        for i, val in enumerate(splitted_title):
+            lines[i] = f"{title_separator} {val: ^{max_digits + 3}} " + lines[i]
 
         return lines
 
@@ -332,7 +336,7 @@ class TwoEntryTable(TableABC):
         to_return: list[str] = ["" for _ in range(max_line)]
 
         # key
-        max_digit_key = _get_max_lenght_key(lines)
+        max_digit_key = _get_max_lenght_key(lines + [self.title])
         for i, val in enumerate(splitted_lines[0]):
             to_return[i] += f"{title_separator} {val: {align_title}{max_digit_key + 3}} {title_separator}"
 
@@ -363,7 +367,7 @@ class TwoEntryTable(TableABC):
         # draw a column * amount of column (don't take last chars depending of amount of columns)
         # separators construct
         to_return: list[str] = []
-        max_digits = _get_max_lenght_key(lines)
+        max_digits = _get_max_lenght_key(lines + [self.title])
         title_separator_line = title_separator * (max_digits+6)
         separator_values_lines = f"{title_separator} {((max_digits + 3) * title_separator)} {title_separator}"
         for key in columns:

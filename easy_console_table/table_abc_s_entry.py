@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from easy_console_table.table_error import TableError
-from table_abc import TableABC
+from easy_console_table.table_abc import TableABC
 
 
 class TableABCSEntry(TableABC):
