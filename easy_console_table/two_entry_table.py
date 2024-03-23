@@ -88,6 +88,10 @@ class TwoEntryTable(TableABC):
             self._lines.append(key)
 
     def add_values(self, key: str, values: list):
+        """ Method to add values to a key in lines or columns
+            :param key: str -> key to put
+            :param values: list -> values to bind on the key
+        """
         if key in self._lines:
             if not len(values) <= len(self._lines):
                 raise TableError("Not enought lines to store the values")
@@ -122,6 +126,9 @@ class TwoEntryTable(TableABC):
             self._table[(self._columns[i]), key] = values[i]
 
     def get_values(self, key: str):
+        """ Method to get values from a key in lines or columns
+            :param key: str -> key's values to get
+        """
         if key in self._lines:
             return self._get_line_values(key)
         elif key in self._columns:
@@ -162,6 +169,9 @@ class TwoEntryTable(TableABC):
         return values
 
     def remove(self, key: str):
+        """ Method to remove key and values with a key
+            :param key: str -> key to remove
+        """
         if key in self._lines:
             self._remove_line(key)
         elif key in self._columns:
@@ -342,7 +352,8 @@ class TwoEntryTable(TableABC):
             :param key: str -> key to draw
             :param title_separator: str -> separator of title
             :param column_separator: str -> character use to separate columns
-            :param align: str -> character use to align (<, ^, >)
+            :param align: str -> character used to align (<, ^, >)
+            :param align_title: str -> character used to align title (<, ^, >)
 
             :return: str -> multi-lines
         """
