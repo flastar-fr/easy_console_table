@@ -26,12 +26,7 @@ def _get_max_lenght_key(keys: list[str]) -> int:
 
 
 class VerticalTable(TableABCSEntry):
-    """ Class to create a vertical table with name as key and list as values
-        :atr table: dict -> contains all the datas
-        :atr options: dict -> contains all the customizable options
-        :atr filter: list -> contains the column's name to not show
-    """
-
+    """ Class to create a vertical table with name as key and list as values """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._options = {"alignment": "right",
@@ -45,7 +40,7 @@ class VerticalTable(TableABCSEntry):
         """ Method to export into a CSV file with filter
             :param file_name: str -> file name to use
         """
-        keys = [key for key in self._table.keys() if key not in self.filter]
+        keys = [key for key in self._table.keys() if key not in self._filter]
         with open(f"{file_name}.csv", "w") as f:
             for key in keys:
                 values = [val.replace("\n", " ") for val in self._table[key]]
@@ -143,7 +138,7 @@ class VerticalTable(TableABCSEntry):
         if len(self._table) == 0:
             return ""
 
-        keys: list[str] = [value for value in list(self._table.keys()) if value not in self.filter]
+        keys: list[str] = [value for value in list(self._table.keys()) if value not in self._filter]
         align: str = alignment[self._options["alignment"]]
         title_separator: str = self._options["title_separator"]
         column_separator: str = self._options["column_separator"]

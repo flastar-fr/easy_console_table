@@ -18,12 +18,7 @@ def _get_lenght_key(key: str) -> int:
 
 
 class HorizontalTable(TableABCSEntry):
-    """ Class to create a vertical table with name as key and list as values
-        :atr table: dict -> contains all the datas
-        :atr options: dict -> contains all the customizable options
-        :atr filter: list -> contains the column's name to not show
-    """
-
+    """ Class to create an horizontal table with name as key and list as values """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._options = {"alignment": "right",
@@ -37,7 +32,7 @@ class HorizontalTable(TableABCSEntry):
         """ Method to export into a CSV file with filter
             :param file_name: str -> file name to use
         """
-        keys = [key for key in self._table.keys() if key not in self.filter]
+        keys = [key for key in self._table.keys() if key not in self._filter]
         longest_column = self._get_longest_column()
         with open(f"{file_name}.csv", "w") as f:
             f.write(",".join(keys) + "\n")  # titles
@@ -121,7 +116,7 @@ class HorizontalTable(TableABCSEntry):
         """
         # get datas
         splitted_lines = []
-        for column in [val for key, val in self._table.items() if key not in self.filter]:
+        for column in [val for key, val in self._table.items() if key not in self._filter]:
             if len(column) - 1 >= index:
                 if "\n" in str(column[index]):
                     splitted_lines.append(str(column[index]).split("\n"))
@@ -155,7 +150,7 @@ class HorizontalTable(TableABCSEntry):
         if self._table == {}:
             return ""
 
-        keys = [value for value in list(self._table.keys()) if value not in self.filter]
+        keys = [value for value in list(self._table.keys()) if value not in self._filter]
         align: str = alignment[self._options["alignment"]]
         title_separator: str = self._options["title_separator"]
         column_separator: str = self._options["column_separator"]

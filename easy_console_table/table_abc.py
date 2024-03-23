@@ -19,7 +19,7 @@ class TableABC(ABC):
                          "line_separator": "_",
                          "alignment_title": "center"}
         self.config(**kwargs)
-        self.filter = []
+        self._filter = []
 
     def config(self, **kwargs):
         """ Method to configure the options for the table to show
@@ -80,11 +80,5 @@ class TableABC(ABC):
     def export_as_csv(self, file_name: str):
         """ Method to export into a CSV file with filter
             :param file_name: str -> file name to use
-        """
-        pass
-
-    def __str__(self) -> str:
-        """ Special method to get the str format of the table
-            :return: str -> the table
         """
         pass

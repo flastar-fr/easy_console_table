@@ -43,8 +43,8 @@ def _get_max_lenght_key(keys: list[str]) -> int:
 class TwoEntryTable(TableABC):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._columns: list[str] = []
-        self._lines: list[str] = []
+        self._columns = []
+        self._lines = []
         self._options = {"alignment": "right",
                          "title_separator": "#",
                          "column_separator": "|",
@@ -87,20 +87,30 @@ class TwoEntryTable(TableABC):
                 raise TableError("Key already exists")
             self._lines.append(key)
 
-    def add_column_values(self, key: str, values: list):
-        """ Method to add values from a column
+    def add_values(self, key: str, values: list):
+        if key in self._lines:
+            if not len(values) <= len(self._lines):
+                raise TableError("Not enought lines to store the values")
+            self._add_line_values(key, values)
+        elif key in self._columns:
+            if not len(values) <= len(self._columns):
+                raise TableError("Not enought columns to store the values")
+            self._add_column_values(key, values)
+        else:
+            raise "Key doesn't exist"
+
+    def _add_column_values(self, key: str, values: list):
+        """ Method to add values from to a specific column
             :param key: str -> column key to add
             :param values: list -> values to add
         """
-        if key not in self._columns:
-            raise TableError("Key doesn't exist")
-        if not len(values) <= len(self._lines):
-            raise TableError("Not enought lines to store the values")
+        assert key in self._columns, "Key doesn't exist"
+        assert len(values) <= len(self._lines), "Not enought lines to store the values"
         for i in range(len(values)):
             self._table[(key, self._lines[i])] = values[i]
 
-    def add_line_values(self, key: str, values: list):
-        """ Method to add values from a line
+    def _add_line_values(self, key: str, values: list):
+        """ Method to add values from to a specific line
             :param key: str -> line key to add
             :param values: list -> values to add
         """
@@ -111,14 +121,22 @@ class TwoEntryTable(TableABC):
         for i in range(len(values)):
             self._table[(self._columns[i]), key] = values[i]
 
-    def get_line_values(self, key: str) -> list:
+    def get_values(self, key: str):
+        if key in self._lines:
+            return self._get_line_values(key)
+        elif key in self._columns:
+            return self._get_column_values(key)
+        else:
+            raise TableError("Key doesn't exist")
+
+    def _get_line_values(self, key: str) -> list:
         """ Method to get values from a line name
             :param key: str -> line name
 
             :return: list -> values to get
         """
         values = []
-        columns = [key for key in self._columns if key not in self.filter]
+        columns = [key for key in self._columns if key not in self._filter]
         for column in columns:
             try:
                 values.append(self._table[(column, key)])
@@ -127,14 +145,14 @@ class TwoEntryTable(TableABC):
 
         return values
 
-    def get_column_values(self, key: str) -> list:
+    def _get_column_values(self, key: str) -> list:
         """ Method to get values from a column name
             :param key: str -> column name
 
             :return: list -> values to get
         """
         values = []
-        lines = [key for key in self._lines if key not in self.filter]
+        lines = [key for key in self._lines if key not in self._filter]
         for line in lines:
             try:
                 values.append(self._table[(key, line)])
@@ -143,11 +161,19 @@ class TwoEntryTable(TableABC):
 
         return values
 
-    def remove_line(self, key: str):
+    def remove(self, key: str):
+        if key in self._lines:
+            self._remove_line(key)
+        elif key in self._columns:
+            self._remove_column(key)
+        else:
+            raise TableError("Key doesn't exist")
+
+    def _remove_line(self, key: str):
         """ Method to remove a whole line
             :param key: str -> line to remove
         """
-        columns = [key for key in self._columns if key not in self.filter]
+        columns = [key for key in self._columns if key not in self._filter]
         for column in columns:
             try:
                 self._table.pop((column, key))
@@ -156,14 +182,14 @@ class TwoEntryTable(TableABC):
 
         self._lines.remove(key)
 
-        if key in self.filter:
-            self.filter.remove(key)
+        if key in self._filter:
+            self._filter.remove(key)
 
-    def remove_column(self, key: str):
+    def _remove_column(self, key: str):
         """ Method to remove a whole column
             :param key: str -> column to remove
         """
-        lines = [key for key in self._lines if key not in self.filter]
+        lines = [key for key in self._lines if key not in self._filter]
         for column in lines:
             try:
                 self._table.pop((key, column))
@@ -172,45 +198,47 @@ class TwoEntryTable(TableABC):
 
         self._columns.remove(key)
 
-        if key in self.filter:
-            self.filter.remove(key)
+        if key in self._filter:
+            self._filter.remove(key)
 
     def get_filter(self) -> list:
         """ Method to get the filter
             :return: list -> the filter
         """
-        return self.filter
+        return self._filter
 
-    def add_filter(self, key: str):
+    def add_filter(self, *args: str):
         """ Method to add a filter
-            :param key: str -> key filtered
+            :param args: str -> keys to filter
         """
-        if key not in self._columns or key not in self._lines:
-            raise TableError("You can't filter something that is not in columns or lines keys")
-        self.filter.append(key)
+        for key in args:
+            if key not in self._lines + self._columns:
+                raise TableError("You can't filter something that is not in columns or lines keys")
+            self._filter.append(key)
 
-    def remove_filter(self, key: str):
+    def remove_filter(self, *args: str):
         """ Method to remove a filter
-            :param key: str -> key remove
+            :param args: str -> keys to remove
         """
-        if key not in self.filter:
-            raise TableError("You can only remove a filter that is filtered")
-        self.filter.remove(key)
+        for key in args:
+            if key not in self._filter:
+                raise TableError("You can only remove a key that is filtered")
+            self._filter.remove(key)
 
     def clear_filter(self):
         """ Method to clear the filter """
-        self.filter = []
+        self._filter = []
 
     def export_as_csv(self, file_name: str):
         """ Method to export into a CSV file with filter
             :param file_name: str -> file name to use
         """
-        lines = [key for key in self._lines if key not in self.filter]
-        columns = [key.replace("\n", " ") for key in self._columns if key not in self.filter]
+        lines = [key for key in self._lines if key not in self._filter]
+        columns = [key.replace("\n", " ") for key in self._columns if key not in self._filter]
         with open(f"{file_name}.csv", "w", encoding="utf-8") as f:
             f.write("," + ",".replace("\n", " ").join(columns) + "\n")
             for line in lines:
-                values = [val.replace("\n", " ") for val in self.get_line_values(line)]
+                values = [val.replace("\n", " ") for val in self._get_line_values(line)]
                 f.write(str(line).replace("\n", " ") + "," + ",".join(values) + "\n")
 
     def get_max_lenght_value_column(self, column_name: str) -> int:
@@ -335,7 +363,7 @@ class TwoEntryTable(TableABC):
             splitted_lines.append([""])
 
         # uniformize datas
-        max_line = len(max(splitted_lines, key=lambda x: len(x)))
+        max_line: int = len(max(splitted_lines, key=lambda x: len(x)))
         for column in splitted_lines:
             while len(column) != max_line:
                 column.append("")
@@ -360,16 +388,27 @@ class TwoEntryTable(TableABC):
 
     def __str__(self) -> str:
         """ Special method to get the str format of the table
-                    :return: str -> the table
-                """
+            :return: str -> the table
+        """
         # get datas
-        columns: list[str] = [value for value in list(self._columns) if value not in self.filter]
-        lines: list[str] = [value for value in list(self._lines) if value not in self.filter]
+        columns: list[str] = [value for value in list(self._columns) if value not in self._filter]
+        lines: list[str] = [value for value in list(self._lines) if value not in self._filter]
         align: str = alignment[self._options["alignment"]]
         title_separator: str = self._options["title_separator"]
         column_separator: str = self._options["column_separator"]
         line_separator: str = self._options["line_separator"]
         alignment_title: str = alignment[self._options["alignment_title"]]
+
+        if len(lines + columns) == 0:
+            if self.title != "":
+                max_digits = _get_max_lenght_key([self.title])
+                line = title_separator*(max_digits+7)
+                to_print = [line]
+                for i, val in enumerate(self.title.split("\n")):
+                    to_print.append(f"{title_separator} {val: ^{max_digits + 3}} {title_separator}")
+                to_print.append(line)
+                return "\n".join(to_print)
+            return ""
 
         # titles display
         # draw a column * amount of column (don't take last chars depending of amount of columns)

@@ -25,7 +25,7 @@ class TableABCSEntry(TableABC):
         """
         if name not in self._table.keys():
             raise TableError("Column's name not in table")
-        if name in self.filter:
+        if name in self._filter:
             self.remove_filter(name)
         self._table.pop(name)
 
@@ -64,7 +64,7 @@ class TableABCSEntry(TableABC):
         """ Method to get the filter
             :return: list -> the filter
         """
-        return self.filter
+        return self._filter
 
     def add_filter(self, key: str):
         """ Method to add a filter
@@ -72,19 +72,19 @@ class TableABCSEntry(TableABC):
         """
         if key not in self._table.keys():
             raise TableError(f"Key {key} not in table keys")
-        self.filter.append(key)
+        self._filter.append(key)
 
     def remove_filter(self, key: str):
         """ Method to remove a filter
             :param key: str -> key remove
         """
-        if key not in self.filter:
+        if key not in self._filter:
             raise TableError(f"Key {key} not in filter")
-        self.filter.remove(key)
+        self._filter.remove(key)
 
     def clear_filter(self):
         """ Method to clear the filter """
-        self.filter = []
+        self._filter = []
 
     def sort_table_from_column(self, column_name: str):
         """ Method to sort the table from depending on sorting a column
