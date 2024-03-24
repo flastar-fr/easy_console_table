@@ -109,6 +109,8 @@ You can configure some parameters to edit the render by changing some characters
 ### Single key Tables (VerticalTable / HorizontalTable)
 The table is implemented using a dictionnary with str as keys that store values in list. 
 #### Table interaction methods :
+> ``set_table`` set a full table implemented with a dict. It takes as parameter a table dict.
+
 > ``add_key`` add a key (column or line) to the table. Takes as parameter a name in str and values to add in list.
 > 
 > Note : if you pass a key that already exists it will replace the old values by the new ones.

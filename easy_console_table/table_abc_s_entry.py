@@ -6,6 +6,18 @@ from typing import Callable
 
 class TableABCSEntry(TableABC):
     """ Base abstract class for every tables which is implemented with 1 type of key (line, column, for example) """
+    def set_table(self, table: dict):
+        """ Method to set a table with a dict
+            :param table: dict -> table to set
+        """
+        if not isinstance(table, dict):
+            raise TableError("Table passed must be a dict")
+        for key, value in table.keys():
+            if not isinstance(key, str):
+                raise TableError(f"Key {key} must be a string")
+            if not isinstance(value, list):
+                raise TableError(f"Values {value} must be a list")
+        self._table = table
 
     def add_key(self, name: str, datas: list):
         """ Method to create a column to the table
