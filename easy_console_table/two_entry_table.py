@@ -168,7 +168,7 @@ class TwoEntryTable(TableABC):
 
         return values
 
-    def remove(self, key: str):
+    def remove_key(self, key: str):
         """ Method to remove key and values with a key
             :param key: str -> key to remove
         """
@@ -193,7 +193,7 @@ class TwoEntryTable(TableABC):
         self._lines.remove(key)
 
         if key in self._filter:
-            self._filter.remove(key)
+            self._filter.remove_key(key)
 
     def _remove_column(self, key: str):
         """ Method to remove a whole column
@@ -209,13 +209,7 @@ class TwoEntryTable(TableABC):
         self._columns.remove(key)
 
         if key in self._filter:
-            self._filter.remove(key)
-
-    def get_filter(self) -> list:
-        """ Method to get the filter
-            :return: list -> the filter
-        """
-        return self._filter
+            self._filter.remove_key(key)
 
     def add_filter(self, *args: str):
         """ Method to add a filter
@@ -225,19 +219,6 @@ class TwoEntryTable(TableABC):
             if key not in self._lines + self._columns:
                 raise TableError("You can't filter something that is not in columns or lines keys")
             self._filter.append(key)
-
-    def remove_filter(self, *args: str):
-        """ Method to remove a filter
-            :param args: str -> keys to remove
-        """
-        for key in args:
-            if key not in self._filter:
-                raise TableError("You can only remove a key that is filtered")
-            self._filter.remove(key)
-
-    def clear_filter(self):
-        """ Method to clear the filter """
-        self._filter = []
 
     def export_as_csv(self, file_name: str):
         """ Method to export into a CSV file with filter
@@ -250,25 +231,6 @@ class TwoEntryTable(TableABC):
             for line in lines:
                 values = [val.replace("\n", " ") for val in self._get_line_values(line)]
                 f.write(str(line).replace("\n", " ") + "," + ",".join(values) + "\n")
-
-    def get_max_lenght_value_column(self, column_name: str) -> int:
-        """ Private method to get the max lenght value to get the right format to display
-            :return: int -> max lenght value
-        """
-        if column_name not in self._columns:
-            raise TableError("Key doesn't exist")
-
-        max_value = max(_get_lenght_key(column_name), _get_lenght_key(self.title))
-        for val in self._lines:
-            try:
-                lines = str(self._table[(column_name, val)]).split('\n')
-                max_line_length = max(len(line) for line in lines)
-                if max_line_length > max_value:
-                    max_value = max_line_length
-            except KeyError:
-                break
-
-        return max_value + 1  # +1 to have a better result
 
     def _get_max_lenght_value_line(self, line_name: str) -> int:
         """ Private method to get the max lenght value to get the right format to display
@@ -285,7 +247,7 @@ class TwoEntryTable(TableABC):
                 if max_line_length > max_value:
                     max_value = max_line_length
             except KeyError:
-                break
+                continue
 
         return max_value + 1  # +1 to have a better result
 
@@ -323,7 +285,7 @@ class TwoEntryTable(TableABC):
         lines: list[str] = [title_separator for _ in range(max_line)]
 
         for i in range(len(splitted_lines)):
-            max_lenght = self.get_max_lenght_value_column(keys[i])
+            max_lenght = self._get_max_lenght_value_line(keys[i])
 
             for j in range(max_line):
                 value = splitted_lines[i][j]
@@ -368,7 +330,7 @@ class TwoEntryTable(TableABC):
             try:
                 splitted_lines.append(str(self._table[column, key]).split("\n"))
             except KeyError:
-                break
+                splitted_lines.append([])
 
         while len(splitted_lines) - 1 != len(columns):
             splitted_lines.append([""])
@@ -429,7 +391,7 @@ class TwoEntryTable(TableABC):
         title_separator_line = title_separator * (max_digits + 6)
         separator_values_lines = f"{title_separator} {((max_digits + 3) * title_separator)} {title_separator}"
         for key in columns:
-            max_digit_value = self.get_max_lenght_value_column(key)
+            max_digit_value = self._get_max_lenght_value_line(key)
             title_separator_line += (title_separator * (max_digit_value + 7))
             separator_values_lines += f" {line_separator * (max_digit_value + 3)} {column_separator}"
 

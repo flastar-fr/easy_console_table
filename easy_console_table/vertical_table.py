@@ -104,7 +104,7 @@ class VerticalTable(TableABCSEntry):
             else:
                 splitted_lines.append([str(val)])
 
-        while len(splitted_lines) - 1 != self._get_longest_column():
+        while len(splitted_lines) - 1 != self._get_longest_column(keys):
             splitted_lines.append([""])
 
         # uniformize datas
@@ -147,8 +147,8 @@ class VerticalTable(TableABCSEntry):
 
         # display title
         max_key = _get_max_lenght_key(keys)
-        longest_column = self._get_longest_column()
-        separator_value_line = title_separator + (max_key + 5) * line_separator + title_separator
+        longest_column = self._get_longest_column(keys)
+        separator_value_line = (max_key + 7) * title_separator
         for i in range(longest_column):
             max_digit_value = self._get_max_lenght_value(i)
             separator_value_line += line_separator * (max_digit_value + 5) + column_separator

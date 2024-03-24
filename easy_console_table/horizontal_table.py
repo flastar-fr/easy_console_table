@@ -33,7 +33,7 @@ class HorizontalTable(TableABCSEntry):
             :param file_name: str -> file name to use
         """
         keys = [key for key in self._table.keys() if key not in self._filter]
-        longest_column = self._get_longest_column()
+        longest_column = self._get_longest_column(keys)
         with open(f"{file_name}.csv", "w") as f:
             f.write(",".join(keys) + "\n")  # titles
             # values
@@ -180,7 +180,7 @@ class HorizontalTable(TableABCSEntry):
 
         # values display
         # (column separator + draw a column) * amount of column + column separator
-        longest_column = self._get_longest_column()
+        longest_column = self._get_longest_column(keys)
         for i in range(longest_column):
             lines = self._draw_line(i, keys, column_separator, align)
             for line in lines:

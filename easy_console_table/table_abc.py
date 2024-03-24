@@ -5,12 +5,7 @@ alignment = {"left": "<", "center": "^", "right": ">"}
 
 
 class TableABC(ABC):
-    """ Abstract class for tables of easy-console-table package, implemented with a dict
-        :atr table: dict -> contains all the datas
-        :atr options: dict -> contains all the customizable options
-        :atr filter: list -> contains the column's name to not show
-    """
-
+    """ Abstract class for tables of easy-console-table package, implemented with a dict """
     def __init__(self, **kwargs):
         self._table = {}
         self._options = {"alignment": "right",
@@ -27,10 +22,15 @@ class TableABC(ABC):
              alignment:str, title_separator:str, column_separator:str, line_separator:str, alignment_title:str
         """
         # exception tests
-        for key in kwargs.keys():
+        for key, val in kwargs.items():
+            if not isinstance(key, str):
+                raise TableError(f"Invalid {key} type, it must be str")
             if key not in self._options.keys():
                 raise TableError(f"Invalid {key} argument, argument should be in : "
                                  f"{', '.join(self._options.keys())}")
+            if key not in ["alignment", "alignment_title"]:
+                if len(val) > 1:
+                    raise TableError(f"Invalid {key} lenght, must be a single character")
         if "alignment" in kwargs.keys():
             if kwargs["alignment"] not in alignment.keys():
                 raise TableError(f"Invalid alignment {kwargs['alignmen']} argument,"
@@ -42,6 +42,8 @@ class TableABC(ABC):
 
         # config
         for key, value in kwargs.items():
+            if "\n" in value:
+                raise TableError(f"Invalid character, it should not contains {'\n'.__repr__()} character")
             self._options[key] = value
 
     def get_table(self) -> dict:
@@ -50,12 +52,11 @@ class TableABC(ABC):
         """
         return self._table
 
-    @abstractmethod
     def get_filter(self) -> list:
         """ Method to get the filter
             :return: list -> the filter
         """
-        pass
+        return self._filter
 
     @abstractmethod
     def add_filter(self, key: str):
@@ -64,17 +65,18 @@ class TableABC(ABC):
         """
         pass
 
-    @abstractmethod
-    def remove_filter(self, key: str):
+    def remove_filter(self, *args: str):
         """ Method to remove a filter
-            :param key: str -> key remove
+            :param args: str -> keys to remove
         """
-        pass
+        for key in args:
+            if key not in self._filter:
+                raise TableError("You can only remove a key that is filtered")
+            self._filter.remove(key)
 
-    @abstractmethod
     def clear_filter(self):
         """ Method to clear the filter """
-        pass
+        self._filter = []
 
     @abstractmethod
     def export_as_csv(self, file_name: str):
