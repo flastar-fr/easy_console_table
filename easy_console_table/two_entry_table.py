@@ -93,11 +93,11 @@ class TwoEntryTable(TableABC):
             :param values: list -> values to bind on the key
         """
         if key in self._lines:
-            if not len(values) <= len(self._lines):
+            if not len(values) <= len(self._columns):
                 raise TableError("Not enought lines to store the values")
             self._add_line_values(key, values)
         elif key in self._columns:
-            if not len(values) <= len(self._columns):
+            if not len(values) <= len(self._lines):
                 raise TableError("Not enought columns to store the values")
             self._add_column_values(key, values)
         else:
