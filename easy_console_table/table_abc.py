@@ -43,7 +43,7 @@ class TableABC(ABC):
         # config
         for key, value in kwargs.items():
             if "\n" in value:
-                raise TableError(f"Invalid character, it should not contains {'\n'.__repr__()} character")
+                raise TableError(f"Invalid character, it should not contains '\\n' character")
             self._options[key] = value
 
     def get_table(self) -> dict:
