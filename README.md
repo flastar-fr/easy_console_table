@@ -25,6 +25,7 @@ A package to easily create a console table that can render this :
     * [Perfect](#perfect-method-)
     * [Sort](#sorting-method-)
   * [TwoEntryTable](#twoentrytable)
+    * [Title](#table-title-)
     * [Interact](#interact-table-)
 * [Some examples](#some-examples)
   * [Large Example](#large-example-)
@@ -142,6 +143,11 @@ You can sort a whole table from the sorting of a key's values.
 > Example : ``table.sort_table_from_key("Hello", reverse=True, key=lambda x: len(x)``
 
 ### TwoEntryTable
+#### Table Title :
+You can define a title for the table that is displayed at the top right corner of the table.
+For this, you need to interract with the ``title`` attribut which is a string.
+You can, as well, set this title to a multi-line title by using the ``\n`` character.
+
 #### Interact table :
 The table is implemented using a dictionnary and 2 lists (line names and column names). 
 The keys dictionnary are a tuple of column and line and values are a single cell value.

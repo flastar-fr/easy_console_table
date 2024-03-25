@@ -1,6 +1,6 @@
 [project]
 name = "easy-console-table"
-version = "0.1.0"
+version = "0.1.0b1"
 authors = [{name="flastar"}, ]
 description = "A simple package to easily create a table in console."
 readme = "README.md"
