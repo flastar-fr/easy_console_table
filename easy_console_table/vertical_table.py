@@ -1,28 +1,6 @@
 from easy_console_table.table_abc_s_entry import TableABCSEntry
-
-alignment = {"left": "<", "center": "^", "right": ">"}
-
-
-def _get_max_lenght_key(keys: list[str]) -> int:
-    """ Private function to get the longest line name value
-        :param keys: list[str] -> line values
-
-        :return: int -> lenght
-    """
-    max_digit_key = 0
-    splitted_lines = []
-    for key in keys:
-        if "\n" in key:
-            splitted_lines.append(key.split("\n"))
-        else:
-            splitted_lines.append([key])
-
-    for line in splitted_lines:
-        max_line_length = len(max(line, key=lambda x: len(x)))
-        if max_line_length > max_digit_key:
-            max_digit_key = max_line_length
-
-    return max_digit_key + 1
+from easy_console_table.table_abc import alignment
+from easy_console_table.utils_function import get_max_lenght_key
 
 
 class VerticalTable(TableABCSEntry):
@@ -117,7 +95,7 @@ class VerticalTable(TableABCSEntry):
         lines: list[str] = ["" for _ in range(max_line)]
 
         # key
-        max_digit_key = _get_max_lenght_key(keys)
+        max_digit_key = get_max_lenght_key(keys)
         for i, val in enumerate(splitted_lines[0]):
             lines[i] += f"{title_separator} {val: {align_title}{max_digit_key + 3}} {title_separator}"
 
@@ -146,7 +124,7 @@ class VerticalTable(TableABCSEntry):
         alignment_title: str = alignment[self._options["alignment_title"]]
 
         # display title
-        max_key = _get_max_lenght_key(keys)
+        max_key = get_max_lenght_key(keys)
         longest_column = self._get_longest_column(keys)
         separator_value_line = (max_key + 7) * title_separator
         for i in range(longest_column):

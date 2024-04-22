@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from easy_console_table.table_error import TableError
-from easy_console_table.table_abc import TableABC
 from typing import Callable
+
+from easy_console_table.table_abc import TableABC
+from easy_console_table.table_error import TableError
 
 
 class TableABCSEntry(TableABC):

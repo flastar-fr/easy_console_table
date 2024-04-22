@@ -1,7 +1,6 @@
-from easy_console_table.table_abc import TableABC
+from easy_console_table.table_abc import TableABC, alignment
 from easy_console_table.table_error import TableError
-
-alignment = {"left": "<", "center": "^", "right": ">"}
+from easy_console_table.utils_function import get_max_lenght_key
 
 
 def _get_lenght_key(key: str) -> int:
@@ -16,28 +15,6 @@ def _get_lenght_key(key: str) -> int:
         splitted_list = [key]
 
     return len(max(splitted_list, key=lambda x: len(x)))
-
-
-def _get_max_lenght_key(keys: list[str]) -> int:
-    """ Private function to get the longest line name value
-        :param keys: list[str] -> line values
-
-        :return: int -> lenght
-    """
-    max_digit_key = 0
-    splitted_lines = []
-    for key in keys:
-        if "\n" in key:
-            splitted_lines.append(key.split("\n"))
-        else:
-            splitted_lines.append([key])
-
-    for line in splitted_lines:
-        max_line_length = len(max(line, key=lambda x: len(x)))
-        if max_line_length > max_digit_key:
-            max_digit_key = max_line_length
-
-    return max_digit_key + 1
 
 
 class TwoEntryTable(TableABC):
@@ -173,43 +150,46 @@ class TwoEntryTable(TableABC):
             :param key: str -> key to remove
         """
         if key in self._lines:
-            self._remove_line(key)
+            self._to_remove(key, "lines")
         elif key in self._columns:
-            self._remove_column(key)
+            self._to_remove(key, "columns")
         else:
-            raise TableError("Key doesn't exist")
+            raise TableError(f"Key {key} doesn't exist")
 
-    def _remove_line(self, key: str):
-        """ Method to remove a whole line
-            :param key: str -> line to remove
+    def _to_remove(self, key: str, to_remove_in: str):
+        """ Private method to remove a key from a line or a column
+            :param key: str -> key to remove
+            :param to_remove_in: str -> where to remove, "lines" or "columns"
         """
-        columns = [key for key in self._columns if key not in self._filter]
-        for column in columns:
-            try:
-                self._table.pop((column, key))
-            except KeyError:
-                continue
+        assert to_remove_in in ["columns", "lines"], f"Remove in : {to_remove_in} not 'columns' or 'lines'"
+        if to_remove_in == "columns":
+            values = self._columns
+        else:
+            values = self._lines
 
-        self._lines.remove(key)
+        for value in values:
+            if to_remove_in == "columns":
+                try:
+                    self._table.pop((value, key))
+                except KeyError:
+                    continue
+            else:
+                try:
+                    self._table.pop((key, value))
+                except KeyError:
+                    continue
 
-        if key in self._filter:
-            self._filter.remove_key(key)
+        # filter
+        if to_remove_in == "lines":
+            self._lines.remove(key)
 
-    def _remove_column(self, key: str):
-        """ Method to remove a whole column
-            :param key: str -> column to remove
-        """
-        lines = [key for key in self._lines if key not in self._filter]
-        for column in lines:
-            try:
-                self._table.pop((key, column))
-            except KeyError:
-                continue
+            if key in self._filter:
+                self._filter.remove_key(key)
+        else:
+            self._columns.remove(key)
 
-        self._columns.remove(key)
-
-        if key in self._filter:
-            self._filter.remove_key(key)
+            if key in self._filter:
+                self._filter.remove(key)
 
     def add_filter(self, *args: str):
         """ Method to add a filter
@@ -292,7 +272,7 @@ class TwoEntryTable(TableABC):
                 lines[j] += f" {value: {align_title}{max_lenght + 3}} {column_separator}"
 
         # align to a Two Entry format (puting space for lines keys drawing)
-        max_digits = _get_max_lenght_key(line_names + [self.title])
+        max_digits = get_max_lenght_key(line_names + [self.title])
         while len(splitted_title) != max_line:
             splitted_title.append("")
         for i, val in enumerate(splitted_title):
@@ -345,7 +325,7 @@ class TwoEntryTable(TableABC):
         to_return: list[str] = ["" for _ in range(max_line)]
 
         # key
-        max_digit_key = _get_max_lenght_key(lines + [self.title])
+        max_digit_key = get_max_lenght_key(lines + [self.title])
         for i, val in enumerate(splitted_lines[0]):
             to_return[i] += f"{title_separator} {val: {align_title}{max_digit_key + 3}} {title_separator}"
 
@@ -374,7 +354,7 @@ class TwoEntryTable(TableABC):
 
         if len(lines + columns) == 0:
             if self.title != "":
-                max_digits = _get_max_lenght_key([self.title])
+                max_digits = get_max_lenght_key([self.title])
                 line = title_separator*(max_digits+7)
                 to_print = [line]
                 for i, val in enumerate(self.title.split("\n")):
@@ -387,7 +367,7 @@ class TwoEntryTable(TableABC):
         # draw a column * amount of column (don't take last chars depending of amount of columns)
         # separators construct
         to_return: list[str] = []
-        max_digits = _get_max_lenght_key(lines + [self.title])
+        max_digits = get_max_lenght_key(lines + [self.title])
         title_separator_line = title_separator * (max_digits + 6)
         separator_values_lines = f"{title_separator} {((max_digits + 3) * title_separator)} {title_separator}"
         for key in columns:

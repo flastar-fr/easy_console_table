@@ -1,6 +1,5 @@
 from easy_console_table.table_abc_s_entry import TableABCSEntry
-
-alignment = {"left": "<", "center": "^", "right": ">"}
+from easy_console_table.table_abc import alignment
 
 
 def _get_lenght_key(key: str) -> int:
